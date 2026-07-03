@@ -1,0 +1,12 @@
+[project]
+name = "research-project-builder"
+version = "0.1.0"
+description = "A Codex Desktop skill for turning rough research ideas into executable research projects."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = []
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"

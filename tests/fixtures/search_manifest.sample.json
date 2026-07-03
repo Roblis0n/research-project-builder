@@ -1,0 +1,13 @@
+{
+  "run_date": "2026-07-03T00:00:00+00:00",
+  "topic_slug": "demo",
+  "mode": "topic_landing",
+  "databases": ["OpenAlex", "Semantic Scholar", "Crossref", "Live Web via Codex web_search"],
+  "live_web_evidence_file": "live_web_sources.json",
+  "query_families": [
+    {"name": "precise", "query": "generative AI graduate students", "source": "OpenAlex", "limit": 5, "results_count": 1}
+  ],
+  "inclusion_criteria": ["Traceable source metadata."],
+  "exclusion_criteria": ["No usable title."],
+  "failed_sources": []
+}

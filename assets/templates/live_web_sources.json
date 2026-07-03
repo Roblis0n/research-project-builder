@@ -1,0 +1,15 @@
+{
+  "created_at": "",
+  "purpose": "Audit record of live Codex web_search sources used before topic, gap, method, or current-state claims.",
+  "sources": [
+    {
+      "query": "",
+      "title": "",
+      "url": "",
+      "source_type": "live-web",
+      "why_it_matters": "",
+      "retrieved_at": "",
+      "notes": ""
+    }
+  ]
+}

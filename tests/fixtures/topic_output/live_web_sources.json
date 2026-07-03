@@ -1,0 +1,13 @@
+{
+  "sources": [
+    {
+      "query": "generative AI graduate student research productivity 2026",
+      "title": "Example live source for current-state triangulation",
+      "url": "https://example.org/current-source",
+      "source_type": "live-web",
+      "why_it_matters": "Demonstrates the required source shape for live web evidence logging.",
+      "retrieved_at": "2026-07-03T00:00:00+00:00",
+      "notes": "Replace this example with actual Codex web_search results."
+    }
+  ]
+}

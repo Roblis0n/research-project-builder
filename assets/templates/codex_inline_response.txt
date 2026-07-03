@@ -1,0 +1,3 @@
+# Codex Direct Research Output
+
+This is the direct-display version. Generated files remain as audit artifacts, but the user does not need to open markdown files to understand the result.

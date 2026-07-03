@@ -1,0 +1,32 @@
+name: smoke-test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile scripts
+        run: python -m py_compile scripts/*.py
+
+      - name: Run unit and fixture tests
+        run: python -m unittest discover -s tests
+
+      - name: Render and validate Stage 0
+        run: |
+          python scripts/render_strategic_gate.py \
+            --idea "generative AI and graduate student research productivity" \
+            --out-dir outputs/stage0-demo
+          python scripts/validate_output.py \
+            --out-dir outputs/stage0-demo \
+            --mode stage0 \
+            --user-input "generative AI and graduate student research productivity" \
+            --project-root .

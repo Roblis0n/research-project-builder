@@ -1,0 +1,11 @@
+{
+  "run_date": "",
+  "topic_slug": "",
+  "mode": "topic_landing",
+  "databases": ["OpenAlex", "Semantic Scholar", "Crossref", "Live Web via Codex web_search"],
+  "live_web_evidence_file": "live_web_sources.json",
+  "query_families": [],
+  "inclusion_criteria": [],
+  "exclusion_criteria": [],
+  "failed_sources": []
+}
