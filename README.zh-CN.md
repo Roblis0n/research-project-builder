@@ -2,9 +2,11 @@
 
 [![CI](https://github.com/Roblis0n/research-project-builder/actions/workflows/smoke-test.yml/badge.svg)](https://github.com/Roblis0n/research-project-builder/actions/workflows/smoke-test.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Version: 0.2.0](https://img.shields.io/badge/version-0.2.0-blue.svg)](CHANGELOG.md)
+[![Version: 0.2.1](https://img.shields.io/badge/version-0.2.1-blue.svg)](CHANGELOG.md)
 
-[English](README.md)
+[English](README.md) · [简体中文](README.zh-CN.md) · [English Skill](SKILL.md) · [中文 Skill](SKILL.zh-CN.md)
+
+![Research Project Builder：从粗略想法到可执行研究](assets/social-preview.png)
 
 把一个粗略研究想法变成可执行、有证据支撑的研究项目，而且不把记忆中的“空白”伪装成真实研究缺口。
 
@@ -74,6 +76,8 @@ python scripts/build_plugin_package.py --output ../research-project-builder-rele
 每次发布都使用新目标；不要复用 `dist/` 或旧打包目录。
 产物字节只读取 Git 索引对象，不读取工作树中未暂存的草稿。运行打包器前，必须先暂存
 所有准备发布的改动。
+安装包同时包含规范运行入口 `SKILL.md` 和供人阅读的中文对照版
+`SKILL.zh-CN.md`。
 
 ## 必须显式调用
 

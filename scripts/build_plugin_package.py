@@ -24,6 +24,7 @@ PLUGIN_FILES = {
 }
 SKILL_ROOT_FILES = {
     "SKILL.md",
+    "SKILL.zh-CN.md",
     "README.md",
     "README.zh-CN.md",
     "CHANGELOG.md",

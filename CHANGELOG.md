@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1 - 2026-08-13
+
+- Added a complete Simplified Chinese `SKILL.zh-CN.md` companion while keeping
+  `SKILL.md` as the only Codex runtime entry point.
+- Displayed the existing approved social-preview banner directly in both
+  README languages and added direct README/skill language navigation.
+- Included exact indexed Chinese-skill bytes in deterministic plugin builds
+  and extended package/link contracts to cover the bilingual release.
+
 ## 0.2.0 - 2026-08-13
 
 - Added complete English and Simplified Chinese onboarding, exact installation commands, explicit invocation examples, and offline proof artifacts.

@@ -2,9 +2,11 @@
 
 [![CI](https://github.com/Roblis0n/research-project-builder/actions/workflows/smoke-test.yml/badge.svg)](https://github.com/Roblis0n/research-project-builder/actions/workflows/smoke-test.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Version: 0.2.0](https://img.shields.io/badge/version-0.2.0-blue.svg)](CHANGELOG.md)
+[![Version: 0.2.1](https://img.shields.io/badge/version-0.2.1-blue.svg)](CHANGELOG.md)
 
-[简体中文](README.zh-CN.md)
+[English](README.md) · [简体中文](README.zh-CN.md) · [English Skill](SKILL.md) · [中文 Skill](SKILL.zh-CN.md)
+
+![Research Project Builder：从粗略想法到可执行研究](assets/social-preview.png)
 
 Turn a rough research idea into an executable, evidence-backed project without pretending that a remembered gap is a real gap.
 
@@ -76,6 +78,8 @@ same-filesystem temporary sibling, and publishes by atomic rename. Start every
 release from a new target; do not reuse `dist/` or any stale package directory.
 Package bytes come from Git index blobs, never from unstaged working-tree
 drafts. Stage every intended release change before running the builder.
+The package includes the canonical `SKILL.md` runtime entry and the
+human-readable `SKILL.zh-CN.md` companion.
 
 ## Invoke it explicitly
 
