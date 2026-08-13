@@ -11,6 +11,7 @@ venv/
 .DS_Store
 
 outputs/
+dist/
 *.log
 
 .pytest_cache/

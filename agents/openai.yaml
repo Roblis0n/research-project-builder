@@ -1,21 +1,10 @@
 interface:
   display_name: "Research Project Builder"
-  short_description: "Codex Desktop skill for turning rough research ideas into executable research projects through a Strategic Decision Gate, live search, evidence matrix, topic landing, and theory/method/model expansion."
-  default_prompt: "Start $research-project-builder. Begin with the Strategic Decision Gate. Do not build the research question directly. Wait until I say 'Use default strategy' before live search and topic generation."
+  short_description: "Build evidence-backed, executable research projects"
+  icon_small: "./assets/icon-small.png"
+  icon_large: "./assets/icon-large.png"
+  brand_color: "#2F6FED"
+  default_prompt: "Use $research-project-builder to turn my rough idea into an executable project, beginning with the Strategic Decision Gate."
 
 policy:
   allow_implicit_invocation: false
-
-workflow:
-  stage_0: "Strategic Decision Gate before search, topic construction, or project plan."
-  stage_1: "Topic Landing Mode after lightweight user authorization; requires live literature search and evidence matrix."
-  stage_2: "Theory / Method / Model Expansion Mode only after explicit expansion trigger."
-
-behavior:
-  role: "strategic research architect"
-  principles:
-    - "strategy-first behavior"
-    - "constraint-first reasoning"
-    - "evidence before novelty"
-    - "execution before decoration"
-    - "direct Codex display before audit files"

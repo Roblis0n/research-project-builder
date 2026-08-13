@@ -6,27 +6,38 @@ on:
 
 jobs:
   smoke:
-    runs-on: ubuntu-latest
+    name: Python 3.12 on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    env:
+      PYTHONUTF8: "1"
+      PYTHONIOENCODING: utf-8
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
       - name: Compile scripts
-        run: python -m py_compile scripts/*.py
+        run: python -c "import pathlib, py_compile; [py_compile.compile(str(path), doraise=True) for path in pathlib.Path('scripts').glob('*.py')]"
 
-      - name: Run unit and fixture tests
+      - name: Run all unit and contract tests
         run: python -m unittest discover -s tests
 
       - name: Render and validate Stage 0
+        env:
+          STAGE0_OUT_DIR: ${{ runner.temp }}/research-project-builder-stage0
         run: |
           python scripts/render_strategic_gate.py \
             --idea "generative AI and graduate student research productivity" \
-            --out-dir outputs/stage0-demo
+            --out-dir "$STAGE0_OUT_DIR"
           python scripts/validate_output.py \
-            --out-dir outputs/stage0-demo \
+            --out-dir "$STAGE0_OUT_DIR" \
             --mode stage0 \
             --user-input "generative AI and graduate student research productivity" \
             --project-root .
+        shell: bash
