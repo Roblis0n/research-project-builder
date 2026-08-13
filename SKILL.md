@@ -1,6 +1,6 @@
 ---
 name: research-project-builder
-description: Codex Desktop research project builder. Use to transform a rough research idea into an executable research project through a Strategic Decision Gate, live literature search, evidence matrix, topic landing, and theory/method/model expansion.
+description: Use when a user brings a rough research idea or asks for live-literature-backed topic landing, an evidence matrix, an executable research project, or later theory/method/model expansion; Chinese triggers include “研究选题”, “选题落地”, “研究方案”, “展开理论”, and “展开建模”.
 ---
 
 # Research Project Builder
@@ -47,6 +47,10 @@ Operate as a strategic research architect:
 
 Do not flatter the rough idea. Diagnose its weak points. Do not ask the user to judge literature, models, methods, or theory validity. Ask only decisions that change the route.
 
+## Command Path Portability
+
+The commands below assume the current working directory is the skill directory. When running from a host workspace, either change into the skill directory first or prefix each `scripts/...` path with the actual installed skill directory, for example `.agents/skills/research-project-builder/` when that path exists in the workspace. For validation commands, also replace `--project-root .` with `--project-root <skill-dir>`. Keep all other flags unchanged.
+
 ## Stage 0 — Strategic Decision Gate
 
 ### Use when
@@ -86,11 +90,17 @@ Then paste the rendered gate directly into Codex. The script writes `codex_inlin
 ### Use when the user says
 
 - "Run defaults"
+- "按默认执行"
 - "Use default strategy"
+- "按默认战略执行"
 - "Start search"
+- "开始搜索"
 - "Begin topic landing"
+- "进入选题落地"
 - "Topic only"
+- "先只给选题"
 - "Apply the D1/D2/D3 changes"
+- "按 D1/D2/D3 的修改执行"
 
 ### Must
 
@@ -150,10 +160,15 @@ python scripts/validate_output.py --out-dir outputs/<run> --mode topic --user-in
 ### Use when the user says
 
 - "Expand theory"
+- "展开理论"
 - "Expand modeling"
+- "展开建模"
 - "Give the complete project plan"
+- "给完整项目方案"
 - "Continue with the default topic"
+- "继续默认推荐选题"
 - "Turn Topic X into a project proposal"
+- "把 Topic X 做成项目方案"
 
 ### Must
 
