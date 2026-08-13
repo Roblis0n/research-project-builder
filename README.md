@@ -193,7 +193,7 @@ If unset, the scripts use their built-in fallback user agent.
 ## Development checks
 
 ```bash
-python -m py_compile scripts/*.py
+python -c "import pathlib, py_compile; [py_compile.compile(str(path), doraise=True) for path in pathlib.Path('scripts').glob('*.py')]"
 python -m unittest discover -s tests
 ```
 

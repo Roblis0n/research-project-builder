@@ -17,6 +17,28 @@ from _common import has_stage1_authorization, has_stage2_trigger  # noqa: E402
 
 
 class SkillContractTests(unittest.TestCase):
+    def test_documented_compile_command_is_cross_platform_and_executable(self) -> None:
+        compile_code = (
+            "import pathlib, py_compile; "
+            "[py_compile.compile(str(path), doraise=True) for path in pathlib.Path('scripts').glob('*.py')]"
+        )
+        documented_command = f'python -c "{compile_code}"'
+
+        for relative_path in ("README.md", "README.zh-CN.md", "AGENTS.md", "CONTRIBUTING.md"):
+            with self.subTest(relative_path=relative_path):
+                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                self.assertNotIn("python -m py_compile scripts/*.py", text)
+                self.assertIn(documented_command, text)
+
+        completed = subprocess.run(
+            [sys.executable, "-c", compile_code],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            timeout=30,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+
     def test_chinese_triggers_and_portable_script_paths_are_documented(self) -> None:
         text = (ROOT / "SKILL.md").read_text(encoding="utf-8")
 
