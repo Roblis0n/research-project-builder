@@ -181,13 +181,13 @@ Stage 2 必须已经有暂定选题和 Stage 1 证据。用户明确说“把默
 macOS/Linux：
 
 ```bash
-export RPB_USER_AGENT="research-project-builder/0.2.0 (mailto:you@example.com)"
+export RPB_USER_AGENT="research-project-builder/0.2.1 (mailto:you@example.com)"
 ```
 
 Windows PowerShell：
 
 ```powershell
-$env:RPB_USER_AGENT = "research-project-builder/0.2.0 (mailto:you@example.com)"
+$env:RPB_USER_AGENT = "research-project-builder/0.2.1 (mailto:you@example.com)"
 ```
 
 如果未设置，脚本会使用内置的后备 User-Agent。

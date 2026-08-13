@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+import re
 import shutil
 import subprocess
 import sys
@@ -17,6 +19,20 @@ from _common import has_stage1_authorization, has_stage2_trigger  # noqa: E402
 
 
 class SkillContractTests(unittest.TestCase):
+    def test_all_shipped_user_agent_identifiers_match_the_release_version(self) -> None:
+        manifest = json.loads(
+            (ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
+        )
+        release_identifier = f"research-project-builder/{manifest['version']}"
+        identifier_pattern = re.compile(r"research-project-builder/\d+(?:\.\d+)+")
+
+        for relative_path in ("README.md", "README.zh-CN.md", "scripts/_common.py"):
+            with self.subTest(relative_path=relative_path):
+                text = (ROOT / relative_path).read_text(encoding="utf-8")
+                identifiers = identifier_pattern.findall(text)
+                self.assertTrue(identifiers, f"no user-agent identifier in {relative_path}")
+                self.assertEqual(set(identifiers), {release_identifier})
+
     def test_changelog_and_manifests_mark_the_v021_release(self) -> None:
         changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
         manifest = (ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")

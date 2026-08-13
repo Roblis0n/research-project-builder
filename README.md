@@ -183,13 +183,13 @@ Structured scholarly APIs work best with an identifiable user agent. Configure o
 macOS/Linux:
 
 ```bash
-export RPB_USER_AGENT="research-project-builder/0.2.0 (mailto:you@example.com)"
+export RPB_USER_AGENT="research-project-builder/0.2.1 (mailto:you@example.com)"
 ```
 
 Windows PowerShell:
 
 ```powershell
-$env:RPB_USER_AGENT = "research-project-builder/0.2.0 (mailto:you@example.com)"
+$env:RPB_USER_AGENT = "research-project-builder/0.2.1 (mailto:you@example.com)"
 ```
 
 If unset, the scripts use their built-in fallback user agent.

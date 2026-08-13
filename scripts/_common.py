@@ -16,7 +16,7 @@ from typing import Any, Iterable
 
 USER_AGENT = os.environ.get(
     "RPB_USER_AGENT",
-    "research-project-builder/0.1 (set RPB_USER_AGENT for contact info)",
+    "research-project-builder/0.2.1 (set RPB_USER_AGENT for contact info)",
 )
 
 MATRIX_FIELDS = [
