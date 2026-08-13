@@ -1,10 +1,19 @@
 from __future__ import annotations
 
+import shutil
+import subprocess
+import sys
+import tempfile
 import unittest
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS = ROOT / "scripts"
+TOPIC_FIXTURE = ROOT / "tests" / "fixtures" / "topic_output"
+sys.path.insert(0, str(SCRIPTS))
+
+from _common import has_stage1_authorization, has_stage2_trigger  # noqa: E402
 
 
 class SkillContractTests(unittest.TestCase):
@@ -34,6 +43,96 @@ class SkillContractTests(unittest.TestCase):
         ):
             with self.subTest(required_contract=required_contract):
                 self.assertIn(required_contract, text)
+
+    def test_documented_chinese_stage1_phrases_authorize_runtime(self) -> None:
+        phrases = (
+            "按默认执行",
+            "按默认战略执行",
+            "开始搜索",
+            "进入选题落地",
+            "先只给选题",
+            "按 D1/D2/D3 的修改执行",
+        )
+
+        for phrase in phrases:
+            with self.subTest(phrase=phrase):
+                self.assertTrue(has_stage1_authorization(phrase))
+
+    def test_documented_chinese_stage2_phrases_authorize_runtime(self) -> None:
+        phrases = (
+            "展开理论",
+            "展开建模",
+            "给完整项目方案",
+            "继续默认推荐选题",
+            "把 Topic X 做成项目方案",
+        )
+
+        for phrase in phrases:
+            with self.subTest(phrase=phrase):
+                self.assertTrue(has_stage2_trigger(phrase))
+
+    def test_validator_accepts_chinese_stage1_authorization(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            out_dir = Path(tmp) / "topic"
+            shutil.copytree(TOPIC_FIXTURE, out_dir)
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPTS / "validate_output.py"),
+                    "--out-dir",
+                    str(out_dir),
+                    "--mode",
+                    "topic",
+                    "--user-input",
+                    "按默认战略执行",
+                    "--project-root",
+                    str(ROOT),
+                ],
+                check=True,
+                cwd=ROOT,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=30,
+            )
+
+    def test_validator_accepts_chinese_stage2_trigger(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            out_dir = Path(tmp) / "stage0"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPTS / "render_strategic_gate.py"),
+                    "--idea",
+                    "生成式 AI 与青年政治表达",
+                    "--out-dir",
+                    str(out_dir),
+                ],
+                check=True,
+                cwd=ROOT,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=30,
+            )
+            (out_dir / "project_plan.md").write_text("Stage 2 requested.\n", encoding="utf-8")
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPTS / "validate_output.py"),
+                    "--out-dir",
+                    str(out_dir),
+                    "--mode",
+                    "stage0",
+                    "--user-input",
+                    "展开理论",
+                    "--project-root",
+                    str(ROOT),
+                ],
+                check=True,
+                cwd=ROOT,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=30,
+            )
 
 
 if __name__ == "__main__":
