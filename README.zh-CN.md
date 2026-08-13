@@ -72,6 +72,8 @@ python scripts/build_plugin_package.py --output ../research-project-builder-rele
 `../research-project-builder-release/research-project-builder/`。打包器拒绝仓库内部
 输出和已存在目标，先在同一文件系统的临时同级目录完成全部构建，再原子重命名发布。
 每次发布都使用新目标；不要复用 `dist/` 或旧打包目录。
+产物字节只读取 Git 索引对象，不读取工作树中未暂存的草稿。运行打包器前，必须先暂存
+所有准备发布的改动。
 
 ## 必须显式调用
 

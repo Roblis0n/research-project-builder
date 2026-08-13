@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import hashlib
 import os
+import re
 import stat
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from urllib.parse import unquote
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -41,13 +43,20 @@ def make_source(parent: Path) -> Path:
         ".codex-plugin/plugin.json": b'{"name":"research-project-builder"}\n',
         "SKILL.md": b"---\nname: research-project-builder\ndescription: Test skill.\n---\n",
         "README.md": b"# Test skill\n",
+        "README.zh-CN.md": b"# Test skill zh-CN\n",
+        "CHANGELOG.md": b"# Changelog\n",
         "AGENTS.md": b"# Test agent contract\n",
+        "CONTRIBUTING.md": b"# Contributing\n",
+        "LICENSE": b"Test license\n",
         "agents/openai.yaml": b'interface:\n  display_name: "Test"\n',
         "assets/icon-small.png": b"small-icon",
         "assets/icon-large.png": b"large-icon",
         "assets/social-preview.png": b"social-preview",
         "assets/templates/runtime.txt": b"runtime-template",
         "references/runtime.md": b"runtime-reference",
+        "examples/README.md": b"# Example index\n",
+        "examples/example.json": b"{}\n",
+        "tests/fixtures/topic_output/topic_info.csv": b"Topic,Name\n0,Test\n",
         "scripts/runtime.py": b"print('runtime')\n",
         "scripts/build_plugin_package.py": b"raise SystemExit('source-only')\n",
     }
@@ -70,6 +79,25 @@ def tree_fingerprint(root: Path) -> list[tuple[str, str, int, int]]:
             )
         )
     return fingerprint
+
+
+def local_markdown_link_failures(root: Path) -> list[tuple[str, int, str]]:
+    failures: list[tuple[str, int, str]] = []
+    link_pattern = re.compile(r"]\(([^)]+)\)")
+    for markdown in sorted(root.rglob("*.md")):
+        text = markdown.read_text(encoding="utf-8")
+        for match in link_pattern.finditer(text):
+            raw_target = match.group(1).strip()
+            if raw_target.startswith("<") and raw_target.endswith(">"):
+                raw_target = raw_target[1:-1]
+            raw_target = raw_target.split(maxsplit=1)[0]
+            if not raw_target or raw_target.startswith(("#", "http://", "https://", "mailto:")):
+                continue
+            target = unquote(raw_target.split("#", 1)[0])
+            if target and not (markdown.parent / target).resolve().exists():
+                line = text.count("\n", 0, match.start()) + 1
+                failures.append((markdown.relative_to(root).as_posix(), line, raw_target))
+    return failures
 
 
 class PluginPackageTests(unittest.TestCase):
@@ -120,15 +148,92 @@ class PluginPackageTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             temp_root = Path(tmp)
             source = make_source(temp_root)
-            (source / "README.md").unlink()
             release_parent = temp_root / "release"
             output = release_parent / SKILL_NAME
 
-            with self.assertRaisesRegex(ValueError, "tracked file is missing"):
+            original_copy_blob = package_builder._copy_blob
+            calls = 0
+
+            def fail_after_staging(*args: object, **kwargs: object) -> None:
+                nonlocal calls
+                calls += 1
+                if calls == 2:
+                    raise OSError("injected write failure")
+                original_copy_blob(*args, **kwargs)
+
+            package_builder._copy_blob = fail_after_staging
+            try:
+                with self.assertRaisesRegex(OSError, "injected write failure"):
+                    package_builder.build_plugin(output, source_root=source)
+            finally:
+                package_builder._copy_blob = original_copy_blob
+
+            self.assertGreaterEqual(calls, 2)
+            self.assertFalse(output.exists())
+            self.assertEqual(list(release_parent.glob(f".{SKILL_NAME}.tmp-*")), [])
+
+    def test_package_reads_index_blob_not_dirty_worktree(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            temp_root = Path(tmp)
+            source = make_source(temp_root)
+            run_git(source, "update-index", "--chmod=+x", "scripts/runtime.py")
+            index_bytes = (source / "README.md").read_bytes()
+            dirty_draft = b"# PRIVATE UNSTAGED WORKTREE DRAFT\n"
+            (source / "README.md").write_bytes(dirty_draft)
+            output = temp_root / "release" / SKILL_NAME
+
+            package_builder.build_plugin(output, source_root=source)
+
+            packaged = output / "skills" / SKILL_NAME / "README.md"
+            self.assertEqual(packaged.read_bytes(), index_bytes)
+            self.assertNotIn(dirty_draft, packaged.read_bytes())
+            packaged_script = output / "skills" / SKILL_NAME / "scripts" / "runtime.py"
+            runtime_plan = [
+                mode
+                for _object_id, target, mode in package_builder.build_copy_plan(source)
+                if target == f"skills/{SKILL_NAME}/scripts/runtime.py"
+            ]
+            self.assertEqual(runtime_plan, ["100755"])
+            if os.name != "nt":
+                self.assertEqual(stat.S_IMODE(packaged_script.stat().st_mode), 0o755)
+
+    def test_unmerged_index_entry_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            temp_root = Path(tmp)
+            source = make_source(temp_root)
+            base = run_git(source, "hash-object", "-w", "--stdin", input_bytes=b"base\n").stdout.strip()
+            ours = run_git(source, "hash-object", "-w", "--stdin", input_bytes=b"ours\n").stdout.strip()
+            theirs = run_git(source, "hash-object", "-w", "--stdin", input_bytes=b"theirs\n").stdout.strip()
+            run_git(source, "update-index", "--force-remove", "README.md")
+            conflict = b"".join(
+                b"100644 " + blob + b" " + stage + b"\tREADME.md\n"
+                for blob, stage in ((base, b"1"), (ours, b"2"), (theirs, b"3"))
+            )
+            run_git(source, "update-index", "--index-info", input_bytes=conflict)
+            output = temp_root / "release" / SKILL_NAME
+
+            with self.assertRaisesRegex(ValueError, "unresolved merge entry"):
                 package_builder.build_plugin(output, source_root=source)
 
             self.assertFalse(output.exists())
-            self.assertEqual(list(release_parent.glob(f".{SKILL_NAME}.tmp-*")), [])
+
+    def test_real_package_has_no_broken_local_markdown_links(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "release" / SKILL_NAME
+
+            package_builder.build_plugin(output, source_root=ROOT)
+
+            packaged_skill = output / "skills" / SKILL_NAME
+            for relative_path in (
+                "README.zh-CN.md",
+                "CHANGELOG.md",
+                "CONTRIBUTING.md",
+                "LICENSE",
+                "examples/README.md",
+                "tests/fixtures/topic_output/topic_recommendation.md",
+            ):
+                self.assertTrue((packaged_skill / relative_path).is_file(), relative_path)
+            self.assertEqual(local_markdown_link_failures(packaged_skill), [])
 
     def test_two_fresh_builds_are_byte_and_metadata_deterministic(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

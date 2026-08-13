@@ -74,6 +74,8 @@ directory for plugin validation, archiving, or installation. The builder
 refuses repository-internal outputs and existing targets, builds through a
 same-filesystem temporary sibling, and publishes by atomic rename. Start every
 release from a new target; do not reuse `dist/` or any stale package directory.
+Package bytes come from Git index blobs, never from unstaged working-tree
+drafts. Stage every intended release change before running the builder.
 
 ## Invoke it explicitly
 
