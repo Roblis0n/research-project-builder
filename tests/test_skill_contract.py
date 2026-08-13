@@ -17,11 +17,16 @@ from _common import has_stage1_authorization, has_stage2_trigger  # noqa: E402
 
 
 class SkillContractTests(unittest.TestCase):
-    def test_changelog_marks_the_v020_release(self) -> None:
+    def test_changelog_and_manifests_mark_the_v021_release(self) -> None:
         changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+        manifest = (ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
+        project = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
 
+        self.assertIn("## 0.2.1 - 2026-08-13", changelog)
         self.assertIn("## 0.2.0 - 2026-08-13", changelog)
-        self.assertNotIn("## 0.2.0 - Unreleased", changelog)
+        self.assertNotIn("## 0.2.1 - Unreleased", changelog)
+        self.assertIn('"version": "0.2.1"', manifest)
+        self.assertIn('version = "0.2.1"', project)
 
     def test_workflow_uses_runner_context_only_after_a_runner_exists(self) -> None:
         workflow = (ROOT / ".github" / "workflows" / "smoke-test.yml").read_text(
@@ -105,6 +110,7 @@ class SkillContractTests(unittest.TestCase):
             self.assertTrue((plugin_root / ".codex-plugin" / "plugin.json").is_file())
             self.assertTrue((plugin_root / "assets" / "social-preview.png").is_file())
             self.assertTrue((packaged_skill / "SKILL.md").is_file())
+            self.assertTrue((packaged_skill / "SKILL.zh-CN.md").is_file())
             self.assertTrue((packaged_skill / "agents" / "openai.yaml").is_file())
             self.assertTrue((packaged_skill / "scripts" / "render_strategic_gate.py").is_file())
 

@@ -42,6 +42,7 @@ def make_source(parent: Path) -> Path:
     tracked_files = {
         ".codex-plugin/plugin.json": b'{"name":"research-project-builder"}\n',
         "SKILL.md": b"---\nname: research-project-builder\ndescription: Test skill.\n---\n",
+        "SKILL.zh-CN.md": b"# Test skill zh-CN\n",
         "README.md": b"# Test skill\n",
         "README.zh-CN.md": b"# Test skill zh-CN\n",
         "CHANGELOG.md": b"# Changelog\n",
@@ -100,6 +101,24 @@ def local_markdown_link_failures(root: Path) -> list[tuple[str, int, str]]:
     return failures
 
 
+def local_markdown_targets(markdown: Path, *, images_only: bool = False) -> set[Path]:
+    targets: set[Path] = set()
+    link_pattern = re.compile(r"(!?)\[[^\]]*\]\(([^)]+)\)")
+    for marker, raw_target in link_pattern.findall(markdown.read_text(encoding="utf-8")):
+        if images_only and marker != "!":
+            continue
+        raw_target = raw_target.strip()
+        if raw_target.startswith("<") and raw_target.endswith(">"):
+            raw_target = raw_target[1:-1]
+        raw_target = raw_target.split(maxsplit=1)[0]
+        if not raw_target or raw_target.startswith(("#", "http://", "https://", "mailto:")):
+            continue
+        target = unquote(raw_target.split("#", 1)[0])
+        if target:
+            targets.add((markdown.parent / target).resolve())
+    return targets
+
+
 class PluginPackageTests(unittest.TestCase):
     def test_package_uses_tracked_whitelist_and_contains_stage0_context(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -111,7 +130,7 @@ class PluginPackageTests(unittest.TestCase):
             package_builder.build_plugin(output, source_root=source)
 
             packaged_skill = output / "skills" / SKILL_NAME
-            for relative_path in ("SKILL.md", "README.md", "AGENTS.md"):
+            for relative_path in ("SKILL.md", "SKILL.zh-CN.md", "README.md", "AGENTS.md"):
                 self.assertEqual(
                     (packaged_skill / relative_path).read_bytes(),
                     (source / relative_path).read_bytes(),
@@ -119,6 +138,21 @@ class PluginPackageTests(unittest.TestCase):
             self.assertFalse((packaged_skill / "assets" / "private-notes.txt").exists())
             self.assertFalse((output / "assets" / "private-notes.txt").exists())
             self.assertFalse((packaged_skill / "scripts" / "build_plugin_package.py").exists())
+
+    def test_repository_readmes_show_banner_and_cross_link_skill_languages(self) -> None:
+        english = ROOT / "README.md"
+        chinese = ROOT / "README.zh-CN.md"
+        chinese_skill = ROOT / "SKILL.zh-CN.md"
+        banner = (ROOT / "assets" / "social-preview.png").resolve()
+
+        self.assertTrue(chinese_skill.is_file())
+        self.assertIn(banner, local_markdown_targets(english, images_only=True))
+        self.assertIn(banner, local_markdown_targets(chinese, images_only=True))
+        self.assertIn(chinese.resolve(), local_markdown_targets(english))
+        self.assertIn(chinese_skill.resolve(), local_markdown_targets(english))
+        self.assertIn(english.resolve(), local_markdown_targets(chinese))
+        self.assertIn((ROOT / "SKILL.md").resolve(), local_markdown_targets(chinese))
+        self.assertEqual(local_markdown_link_failures(ROOT), [])
 
     def test_output_inside_source_root_is_rejected_without_creating_it(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -225,6 +259,7 @@ class PluginPackageTests(unittest.TestCase):
 
             packaged_skill = output / "skills" / SKILL_NAME
             for relative_path in (
+                "SKILL.zh-CN.md",
                 "README.zh-CN.md",
                 "CHANGELOG.md",
                 "CONTRIBUTING.md",
