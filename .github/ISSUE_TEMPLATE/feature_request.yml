@@ -1,0 +1,46 @@
+name: Feature or workflow request
+description: Propose a focused improvement while preserving the strategy-first and evidence-gated workflow.
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Research workflow problem
+      description: Explain the user or contributor problem this change would solve. Do not include private research material.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Describe the smallest useful behavior, output, or documentation change.
+    validations:
+      required: true
+  - type: checkboxes
+    id: gates
+    attributes:
+      label: Gate and evidence impact
+      description: Confirm how the proposal affects the non-negotiable workflow.
+      options:
+        - label: This proposal keeps Stage 0 before search and does not bypass explicit Stage 1 authorization.
+          required: true
+        - label: This proposal does not make novelty, gap, data, benchmark, method, or model claims without recorded live evidence.
+          required: true
+        - label: I have described any required change to validation, generated artifacts, tests, or user-facing workflow below.
+          required: true
+  - type: textarea
+    id: workflow_impact
+    attributes:
+      label: Workflow, validation, and compatibility impact
+      description: Identify affected stage(s), scripts, output artifacts, tests, and any migration or fallback needed. Write "None" for each area with no impact.
+      placeholder: "Stage 1; update validate_output.py and topic fixture; preserve existing authorization terms."
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or evidence
+      description: Note considered alternatives, public examples, or a privacy-safe prototype/fixture.
+    validations:
+      required: true
