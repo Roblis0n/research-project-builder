@@ -6,7 +6,9 @@
 - Preserved the strategy-first gate while adding Chinese workflow authorizations and portable installed-skill command guidance.
 - Expanded CI to Python 3.12 on Ubuntu and Windows and added project-specific community health templates.
 - Added Codex plugin packaging, supported skill UI metadata, explicit-invocation policy, and the idea-gate-evidence-route brand family.
-- Added a release packager that projects the canonical root skill into the standard `skills/research-project-builder/` plugin layout without duplicating the source tree.
+- Added a release packager that projects only explicit, Git-tracked runtime files into the standard `skills/research-project-builder/` plugin layout without duplicating the source tree.
+- Hardened plugin releases against untracked-file leakage, symbolic links, path escape, recursive in-repository output, stale targets, partial builds, and nondeterministic file metadata.
+- Added packaged Stage 0 execution and official validator coverage, including the required `README.md` and `AGENTS.md` runtime context.
 
 ## 0.1.0
 

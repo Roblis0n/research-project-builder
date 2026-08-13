@@ -56,6 +56,25 @@ git clone https://github.com/Roblis0n/research-project-builder.git ".agents\skil
 
 Codex detects skill changes automatically; restart it if the skill does not appear. These locations follow the [official Codex skill-loading scopes](https://developers.openai.com/codex/skills#where-codex-loads-local-skills).
 
+### Build the standalone Codex plugin
+
+The repository root is the canonical directly installable **skill**, not an
+installable plugin directory. Its `.codex-plugin/plugin.json` is build input;
+the standard `skills/research-project-builder/` plugin layout exists only in a
+fresh release artifact.
+
+Build that artifact into a new sibling directory outside this repository:
+
+```text
+python scripts/build_plugin_package.py --output ../research-project-builder-release/research-project-builder
+```
+
+Use the resulting `../research-project-builder-release/research-project-builder/`
+directory for plugin validation, archiving, or installation. The builder
+refuses repository-internal outputs and existing targets, builds through a
+same-filesystem temporary sibling, and publishes by atomic rename. Start every
+release from a new target; do not reuse `dist/` or any stale package directory.
+
 ## Invoke it explicitly
 
 Implicit invocation is disabled by design. Start a Codex task with this exact prompt:

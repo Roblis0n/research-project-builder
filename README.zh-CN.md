@@ -56,6 +56,23 @@ git clone https://github.com/Roblis0n/research-project-builder.git ".agents\skil
 
 Codex 会自动检测 skill 变化；如果没有出现，重启 Codex。以上目录遵循 [Codex 官方 skill 加载范围](https://developers.openai.com/codex/skills#where-codex-loads-local-skills)。
 
+### 构建独立 Codex 插件
+
+仓库根目录是可直接安装的 canonical **skill**，不是可安装插件目录。
+根目录的 `.codex-plugin/plugin.json` 只是构建输入；标准
+`skills/research-project-builder/` 插件布局只存在于新鲜构建的发布产物中。
+
+在仓库外的新同级目录构建产物：
+
+```text
+python scripts/build_plugin_package.py --output ../research-project-builder-release/research-project-builder
+```
+
+插件校验、归档和安装只能使用生成的
+`../research-project-builder-release/research-project-builder/`。打包器拒绝仓库内部
+输出和已存在目标，先在同一文件系统的临时同级目录完成全部构建，再原子重命名发布。
+每次发布都使用新目标；不要复用 `dist/` 或旧打包目录。
+
 ## 必须显式调用
 
 本项目有意关闭隐式调用。请在 Codex 新任务中准确输入：
