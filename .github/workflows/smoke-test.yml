@@ -15,7 +15,6 @@ jobs:
     env:
       PYTHONUTF8: "1"
       PYTHONIOENCODING: utf-8
-      STAGE0_OUT_DIR: ${{ runner.temp }}/research-project-builder-stage0
     steps:
       - uses: actions/checkout@v6
 
@@ -30,6 +29,8 @@ jobs:
         run: python -m unittest discover -s tests
 
       - name: Render and validate Stage 0
+        env:
+          STAGE0_OUT_DIR: ${{ runner.temp }}/research-project-builder-stage0
         run: |
           python scripts/render_strategic_gate.py \
             --idea "generative AI and graduate student research productivity" \

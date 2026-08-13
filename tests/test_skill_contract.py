@@ -17,6 +17,20 @@ from _common import has_stage1_authorization, has_stage2_trigger  # noqa: E402
 
 
 class SkillContractTests(unittest.TestCase):
+    def test_workflow_uses_runner_context_only_after_a_runner_exists(self) -> None:
+        workflow = (ROOT / ".github" / "workflows" / "smoke-test.yml").read_text(
+            encoding="utf-8"
+        )
+        job_env = workflow.split("    env:", 1)[1].split("    steps:", 1)[0]
+
+        self.assertNotIn("runner.temp", job_env)
+        self.assertIn(
+            "      - name: Render and validate Stage 0\n"
+            "        env:\n"
+            "          STAGE0_OUT_DIR: ${{ runner.temp }}/research-project-builder-stage0\n",
+            workflow,
+        )
+
     def test_documented_compile_command_is_cross_platform_and_executable(self) -> None:
         compile_code = (
             "import pathlib, py_compile; "
