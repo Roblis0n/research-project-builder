@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0 - Unreleased
+
+- Added complete English and Simplified Chinese onboarding, exact installation commands, explicit invocation examples, and offline proof artifacts.
+- Preserved the strategy-first gate while adding Chinese workflow authorizations and portable installed-skill command guidance.
+- Expanded CI to Python 3.12 on Ubuntu and Windows and added project-specific community health templates.
+- Added Codex plugin packaging, supported skill UI metadata, explicit-invocation policy, and the idea-gate-evidence-route brand family.
+- Added a release packager that projects the canonical root skill into the standard `skills/research-project-builder/` plugin layout without duplicating the source tree.
+
 ## 0.1.0
 
 - Initial public repository packaging.

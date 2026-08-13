@@ -29,7 +29,7 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("--project-root <skill-dir>", text)
         self.assertIn("Keep all other flags unchanged", text)
 
-    def test_reconciliation_keeps_gate_and_evidence_contracts(self) -> None:
+    def test_reconciliation_and_plugin_package_keep_contracts(self) -> None:
         text = (ROOT / "SKILL.md").read_text(encoding="utf-8")
 
         for required_contract in (
@@ -43,6 +43,28 @@ class SkillContractTests(unittest.TestCase):
         ):
             with self.subTest(required_contract=required_contract):
                 self.assertIn(required_contract, text)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            plugin_root = Path(tmp) / "research-project-builder"
+            subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPTS / "build_plugin_package.py"),
+                    "--output",
+                    str(plugin_root),
+                ],
+                check=True,
+                cwd=ROOT,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=30,
+            )
+            packaged_skill = plugin_root / "skills" / "research-project-builder"
+            self.assertTrue((plugin_root / ".codex-plugin" / "plugin.json").is_file())
+            self.assertTrue((plugin_root / "assets" / "social-preview.png").is_file())
+            self.assertTrue((packaged_skill / "SKILL.md").is_file())
+            self.assertTrue((packaged_skill / "agents" / "openai.yaml").is_file())
+            self.assertTrue((packaged_skill / "scripts" / "render_strategic_gate.py").is_file())
 
     def test_documented_chinese_stage1_phrases_authorize_runtime(self) -> None:
         phrases = (

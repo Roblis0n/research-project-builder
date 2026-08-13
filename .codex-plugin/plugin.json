@@ -1,0 +1,41 @@
+{
+  "name": "research-project-builder",
+  "version": "0.2.0",
+  "description": "Turn rough research ideas into executable, evidence-backed research projects through explicit strategic gates.",
+  "author": {
+    "name": "Roblis0n",
+    "url": "https://github.com/Roblis0n"
+  },
+  "homepage": "https://github.com/Roblis0n/research-project-builder",
+  "repository": "https://github.com/Roblis0n/research-project-builder",
+  "license": "MIT",
+  "keywords": [
+    "research",
+    "literature-search",
+    "evidence-matrix",
+    "topic-selection",
+    "project-planning"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Research Project Builder",
+    "shortDescription": "Build evidence-backed, executable research projects",
+    "longDescription": "Turn a rough research idea into a defensible project through a Strategic Decision Gate, authorized live literature search, an evidence matrix, executable topic landing, and optional theory, method, and model expansion.",
+    "developerName": "Roblis0n",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/Roblis0n/research-project-builder",
+    "defaultPrompt": [
+      "Use $research-project-builder to turn my rough idea into an executable project, starting with the Strategic Decision Gate."
+    ],
+    "brandColor": "#2F6FED",
+    "composerIcon": "./assets/icon-small.png",
+    "logo": "./assets/icon-large.png",
+    "screenshots": [
+      "./assets/social-preview.png"
+    ]
+  }
+}
