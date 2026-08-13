@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 - Unreleased
+## 0.2.0 - 2026-08-13
 
 - Added complete English and Simplified Chinese onboarding, exact installation commands, explicit invocation examples, and offline proof artifacts.
 - Preserved the strategy-first gate while adding Chinese workflow authorizations and portable installed-skill command guidance.
